@@ -12,7 +12,9 @@ import {
   replace,
   join,
   toLower,
-  sortBy
+  sortBy,
+  flip,
+  concat
 } from 'ramda'
 
 import { formatMoney } from 'accounting-js'
@@ -118,11 +120,20 @@ QUnit.test('Bonus 1: availablePrices', (assert) => {
 // ============
 // Refactor to pointfree.
 
-const fastestCar = function (cars) {
+const fastestCar_ = function (cars) {
   const sorted = sortBy((car) => car.horsepower, cars)
   const fastest = last(sorted)
   return fastest.name + ' is the fastest'
 }
+
+const append = flip(concat)
+
+const fastestCar = compose(
+  append(' is the fastest'),
+  prop('name'),
+  last,
+  sortBy(prop('horsepower'))
+)
 
 QUnit.test('Bonus 2: fastestCar', (assert) => {
   assert.equal(fastestCar(CARS), 'Aston Martin One-77 is the fastest')
